@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---- Brand palette: warm-black studio + antique gold, not a generic
+     near-black-plus-neon-accent theme. Cream is used for body copy on
+     dark panels; ink is used for text on cream/gold surfaces. ---- */
+  --color-ink: #100E0B;
+  --color-panel: #1B1712;
+  --color-panel-soft: #241E17;
+  --color-line: #3A3226;
+  --color-gold: #C9A24B;
+  --color-gold-soft: #E3C783;
+  --color-gold-deep: #97772C;
+  --color-cream: #F3EEE2;
+  --color-cream-dim: #C9C2B2;
+  --color-clay: #8A5A44;
+  --color-moss: #6E7F5C;
+
+  --font-display: "Times New Roman", Times, serif;
+  --font-body: "Times New Roman", Times, serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Visible keyboard focus everywhere, gold ring on the dark theme */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Thin hairline divider used editorially between sections */
+.hairline {
+  border-color: var(--color-line);
+}
