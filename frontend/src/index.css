@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --color-ink: #100E0B;
+  --color-panel: #1B1712;
+  --color-panel-soft: #241E17;
+  --color-line: #3A3226;
+  --color-gold: #C9A24B;
+  --color-gold-soft: #E3C783;
+  --color-gold-deep: #97772C;
+  --color-cream: #F3EEE2;
+  --color-cream-dim: #C9C2B2;
+  --color-clay: #8A5A44;
+  --color-moss: #6E7F5C;
+
+  --font-display: "Times New Roman", Times, serif;
+  --font-body: "Times New Roman", Times, serif;
+}
+
+html.light {
+  --color-ink: #FAF8F5;
+  --color-panel: #FFFFFF;
+  --color-panel-soft: #F4EFEA;
+  --color-line: #E2D8C8;
+  --color-gold: #A87D20;
+  --color-gold-soft: #8C6615;
+  --color-gold-deep: #6E5010;
+  --color-cream: #1A1612;
+  --color-cream-dim: #5C5346;
+  --color-clay: #B84A32;
+  --color-moss: #4A6635;
+}
+
+@theme {
+  --color-ink: var(--color-ink);
+  --color-panel: var(--color-panel);
+  --color-panel-soft: var(--color-panel-soft);
+  --color-line: var(--color-line);
+  --color-gold: var(--color-gold);
+  --color-gold-soft: var(--color-gold-soft);
+  --color-gold-deep: var(--color-gold-deep);
+  --color-cream: var(--color-cream);
+  --color-cream-dim: var(--color-cream-dim);
+  --color-clay: var(--color-clay);
+  --color-moss: var(--color-moss);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: var(--color-gold);
+  color: var(--color-ink);
+}
+
+/* Visible keyboard focus everywhere, gold ring on the dark theme */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Thin hairline divider used editorially between sections */
+.hairline {
+  border-color: var(--color-line);
+}
