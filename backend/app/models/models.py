@@ -59,6 +59,49 @@ class User(Base):
     bookings = relationship("Booking", back_populates="customer")
 
 
+class UserSecurityQuestion(Base):
+    __tablename__ = "user_security_questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    question_key = Column(String(50), nullable=False)
+    answer_hash = Column(String(255), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=now_utc,
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "question_key",
+            name="uq_user_security_question",
+        ),
+    )
+
+
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    token_hash = Column(String(64), unique=True, nullable=False)
+    expires_at = Column(DateTime(timezone=True), nullable=False)
+    is_used = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
+
+
 class Service(Base):
     __tablename__ = "services"
 
@@ -180,3 +223,27 @@ class PasswordResetOTP(Base):
     is_used = Column(Boolean, default=False)
     attempts = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), default=now_utc)
+
+class UserOAuthAccount(Base):
+    __tablename__ = "user_oauth_accounts"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    provider = Column(String(30), nullable=False)
+    provider_subject = Column(String(255), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "provider", "provider_subject",
+            name="uq_oauth_provider_subject",
+        ),
+        UniqueConstraint("user_id", "provider", name="uq_user_oauth_provider"),
+    )
+    
+    

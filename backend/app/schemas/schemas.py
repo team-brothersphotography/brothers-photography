@@ -1,5 +1,5 @@
 from datetime import date, datetime, time
-from typing import Optional
+from typing import Optional, Literal
 
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
@@ -8,11 +8,94 @@ from app.models.models import BookingStatus, CATEGORY_LABELS, ServiceCategory
 
 # ---------- Auth ----------
 
+from typing import Literal
+from pydantic import BaseModel, Field, field_validator, model_validator
+
+
+SECURITY_QUESTIONS = {
+    "first_school": "What was the name of your first school?",
+    "childhood_friend": "What was the first name of your childhood best friend?",
+    "favorite_teacher": "What was the surname of your favorite teacher?",
+    "first_pet": "What was the name of your first pet?",
+    "favorite_city": "What is the name of your favorite city?",
+    "favorite_book": "What was the title of your favorite childhood book?",
+    "childhood_nickname": "What was your childhood nickname?",
+}
+
+
+class SecurityAnswerInput(BaseModel):
+    question_key: Literal[
+        "first_school",
+        "childhood_friend",
+        "favorite_teacher",
+        "first_pet",
+        "favorite_city",
+        "favorite_book",
+        "childhood_nickname",
+    ]
+    answer: str = Field(min_length=1, max_length=200)
+
+    @field_validator("answer")
+    @classmethod
+    def normalize_answer(cls, value: str) -> str:
+        value = " ".join(value.strip().casefold().split())
+        if not value:
+            raise ValueError("Please enter an answer.")
+        return value
+
+
+class SecurityAnswersInput(BaseModel):
+    security_answers: list[SecurityAnswerInput] = Field(
+        min_length=3, max_length=3
+    )
+
+    @model_validator(mode="after")
+    def require_distinct_questions(self):
+        keys = [item.question_key for item in self.security_answers]
+        if len(set(keys)) != 3:
+            raise ValueError("Choose three different security questions.")
+        return self
+
+
+class ForgotPasswordQuestionsRequest(BaseModel):
+    phone_number: str = Field(min_length=7, max_length=20)
+
+
+class ForgotPasswordAnswersRequest(ForgotPasswordQuestionsRequest):
+    security_answers: list[SecurityAnswerInput] = Field(
+        min_length=3, max_length=3
+    )
+
+    @model_validator(mode="after")
+    def require_distinct_questions(self):
+        keys = [item.question_key for item in self.security_answers]
+        if len(set(keys)) != 3:
+            raise ValueError("Choose three different security questions.")
+        return self
+
+
+class ForgotPasswordResetRequest(BaseModel):
+    reset_token: str
+    new_password: str = Field(min_length=8, max_length=72)
+    confirm_password: str
+
+    @model_validator(mode="after")
+    def passwords_match(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError("Passwords do not match.")
+        return self
+
+
+
+
 class RegisterRequest(BaseModel):
     full_name: str = Field(min_length=2, max_length=150)
     phone_number: str = Field(min_length=7, max_length=20)
     password: str = Field(min_length=8, max_length=72)
     confirm_password: str
+    security_answers: list[SecurityAnswerInput] = Field(
+        min_length=3, max_length=3
+    )
 
     @field_validator("phone_number")
     @classmethod
@@ -23,10 +106,16 @@ class RegisterRequest(BaseModel):
         return v.strip()
 
     @model_validator(mode="after")
-    def passwords_match(self):
+    def validate_registration(self):
         if self.password != self.confirm_password:
             raise ValueError("Passwords do not match.")
+
+        keys = [item.question_key for item in self.security_answers]
+        if len(set(keys)) != 3:
+            raise ValueError("Choose three different security questions.")
+
         return self
+
 
 
 class LoginRequest(BaseModel):

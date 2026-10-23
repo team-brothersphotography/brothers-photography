@@ -20,19 +20,27 @@ apiClient.interceptors.request.use((config) => {
  * DRF errors can arrive as {detail: "..."} or {field: ["msg", ...]} —
  * this normalizes both into a single string for the UI.
  */
-export function extractErrorMessage(error: unknown): string {
-  if (axios.isAxiosError(error)) {
-    const data = error.response?.data;
-    if (!data) return "Something went wrong. Please try again.";
-    if (typeof data === "string") return data;
-    if (data.detail) return String(data.detail);
 
-    const firstKey = Object.keys(data)[0];
-    if (firstKey) {
-      const value = data[firstKey];
-      const message = Array.isArray(value) ? value[0] : value;
-      return String(message);
+export function extractErrorMessage(err: unknown): string {
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const response = (err as {
+      response?: { data?: { detail?: unknown } };
+    }).response;
+
+    const detail = response?.data?.detail;
+
+    if (typeof detail === "string") return detail;
+
+    if (detail && typeof detail === "object") {
+      const values = Object.values(detail as Record<string, unknown>);
+      const message = values.find((value) => typeof value === "string");
+
+      if (typeof message === "string") return message;
     }
   }
+
+  if (err instanceof Error) return err.message;
+
   return "Something went wrong. Please try again.";
 }
+

@@ -24,6 +24,9 @@ class Settings:
     JWT_ALGORITHM: str = "HS256"
 
     DEBUG: bool = os.getenv("DEBUG", "True") == "True"
+    
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
 
     CORS_ORIGINS: list[str] = _split_csv(
         os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")

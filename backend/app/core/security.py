@@ -36,3 +36,8 @@ def decode_token(token: str) -> dict | None:
 
 def generate_otp() -> str:
     return f"{random.randint(0, 999999):06d}"
+
+
+def normalize_security_answer(answer: str) -> str:
+    """Normalize answers consistently before hashing or verification."""
+    return " ".join(answer.strip().casefold().split())

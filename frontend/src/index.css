@@ -58,3 +58,19 @@ body {
 .hairline {
   border-color: var(--color-line);
 }
+
+
+/* Google sign-in — dark luxury auth theme */
+.cin-google-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 8px 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.cin-google-login iframe {
+  max-width: 100%;
+}
